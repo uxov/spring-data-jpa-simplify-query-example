@@ -9,6 +9,8 @@ import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate;
 import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate.ComparisonOperator;
 import org.hibernate.query.criteria.internal.predicate.LikePredicate;
 
+import java.util.Set;
+
 public class Condition {
 	private final Root root;
 	private final CriteriaBuilder cb;
@@ -77,6 +79,12 @@ public class Condition {
 	
 	public Predicate and(Predicate... predicates) {
 		return cb.and(predicates);
+	}
+
+	public Predicate in(String field, Set objectSet) {
+		if (null == objectSet || objectSet.isEmpty()) {return null;}
+		objectSet.removeIf(o -> null == o || "".equals(o));
+		return root.get(field).in(objectSet);
 	}
 
 }

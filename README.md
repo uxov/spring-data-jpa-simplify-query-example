@@ -4,52 +4,60 @@
 - Selecting specific columns  
 
 ## Requirements
-JDK 1.8  
-Gradle 5.5
+- JDK version >= 8  
+- Gradle
 
-## Code examples
+## Code Examples
+### Select specific columns
 ```java
 SelectQuery query = entityQuery.SelectQuery(User.class);
 Condition c = query.getCondition();
-Pageable page = PageRequest.of(pageNum - 1, pageSize, Sort.by("age").descending());
+
 Page dataList = query.select("name", "age").where(
-        c.greaterThan("age", 22),
-        c.greaterThanOrEqualTo("age", 25)).getResult(page);
+	c.greaterThanOrEqualTo("age", 25)
+).getResult(pageable);
 ```
 
-```java
-SelectQuery query = entityQuery.SelectQuery(User.class);
-Condition c = query.getCondition();
-Pageable page = PageRequest.of(pageNum - 1, pageSize, Sort.by("age").descending());
-query.select("name", "age").where(
-        c.equal("sex", "female"));
-if (age != null) {
-    query.getWhere().add(c.greaterThan("age", age));
-}
-Page dataList = query.getResult().getResult(page);
-```
-
+### Select all columns
 ```java
 NormalQuery query = entityQuery.NormalQuery(User.class);
 Condition c = query.getCondition();
-Pageable page = PageRequest.of(pageNum - 1, pageSize, Sort.by("age").descending());
+
 Page dataList = query.select().where(
-        c.equal("sex", "male"),
-        c.greaterThan("age", 22)).getResult(page);
+	c.equal("sex", "male"),
+	c.greaterThan("age", 22)
+).getResult(pageable);
 ```
 
+### Ignore null value condition(not need to check for null)
 ```java
 NormalQuery query = entityQuery.NormalQuery(User.class);
 Condition c = query.getCondition();
-Pageable page = PageRequest.of(pageNum - 1, pageSize, Sort.by("age").descending());
-query.select().where(
-        c.equal("sex", "female"));
-if (age != null) {
-    query.getWhere().add(c.greaterThan("age", age));
-}
-Page dataList = query.getResult().getResult(page);
+
+String sex = null;
+
+Page dataList = query.select().where(
+	c.equal("sex", sex),
+	c.greaterThan("age", 22)
+).getResult(pageable);
+```
+
+### Add condition
+```java
+query.getWhere().add(c.greaterThan("age", 22));
+```
+
+### In condition
+```java
+Set ageSet = new HashSet<>();
+ageSet.add(22);
+ageSet.add(27);
+
+Page dataList = query.select().where(
+	c.in("age", ageSet)
+).getResult(pageable);
 ```
 
 ## Usage
-See in `src/test/java/xyz/defe/springDataJpa/test/SimplifyQueryTest.java`
+See more detail in `src/test/java/xyz/defe/springDataJpa/test/SimplifyQueryTest.java`
 
